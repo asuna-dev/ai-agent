@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: ai-agent
+  profiles:
+    active: ${SPRING_ENV:local}
+server:
+  port: 9001
+  servlet:
+    context-path: /api
+
+# springdoc-openapi
+springdoc:
+  swagger-ui:
+    enabled: ${SPRINGDOC_ENABLED:false}
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    enabled: ${SPRINGDOC_ENABLED:false}
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: org.zepe.aiagent.controller
+
+# knife4j
+knife4j:
+  enable: ${SPRINGDOC_ENABLED:false}
+  setting:
+    language: zh_cn
