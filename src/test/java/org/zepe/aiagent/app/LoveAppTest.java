@@ -49,4 +49,20 @@ class LoveAppTest {
         Assertions.assertNotNull(loveReport);
         log.info("loveReport: {}", loveReport);
     }
+
+    @Test
+    void chatWithRag() {
+        String chatId = UUID.randomUUID().toString();
+        String message = "我已经结婚了，但是婚后关系不太亲密，怎么办？";
+        String answer = loveApp.chatWithRag(message, chatId);
+        Assertions.assertNotNull(answer);
+    }
+
+    @Test
+    void chatWithCloudRag() {
+        String chatId = UUID.randomUUID().toString();
+        String message = "我单身很久了，为什么我总是遇不到合适的人？";
+        String answer = loveApp.chatWithRag(message, chatId);
+        Assertions.assertNotNull(answer);
+    }
 }

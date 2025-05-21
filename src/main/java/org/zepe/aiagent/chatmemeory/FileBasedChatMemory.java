@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @author zzpus
  * @datetime 2025/5/21 17:41
- * @description
+ * @description 基于文件存储的对话记录
  */
 @Slf4j
 public class FileBasedChatMemory implements ChatMemory {

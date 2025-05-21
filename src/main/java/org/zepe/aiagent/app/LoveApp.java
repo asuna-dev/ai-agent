@@ -1,13 +1,15 @@
 package org.zepe.aiagent.app;
 
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Component;
 import org.zepe.aiagent.advisor.MyLoggerAdvisor;
 import org.zepe.aiagent.advisor.ReReadAdvisor;
@@ -29,9 +31,18 @@ public class LoveApp {
         "围绕单身、恋爱、已婚三种状态提问：单身状态询问社交圈拓展及追求心仪对象的困扰；" +
         "恋爱状态询问沟通、习惯差异引发的矛盾；已婚状态询问家庭责任与亲属关系处理的问题。" +
         "引导用户详述事情经过、对方反应及自身想法，以便给出专属解决方案。";
+
     private static final String CHAT_MEMORY_SESSION_ID_KEY = "sessionId";
+
     private static final String CHAT_MEMORY_RETRIEVE_SIZE_KEY = "retrieveSize";
+
     private final ChatClient chatClient;
+
+    @Resource
+    private VectorStore loveAppVectorStore;
+
+    @Resource
+    private Advisor loveAppRagCloudAdvisor;
 
     public LoveApp(ChatModel dashscopeChatModel) {
         // 初始化基于文件的对话记忆
@@ -39,11 +50,7 @@ public class LoveApp {
         ChatMemory chatMemory = new FileBasedChatMemory(dir);
         chatClient = ChatClient.builder(dashscopeChatModel)
             .defaultSystem(SYSTEM_PROMPT)
-            .defaultAdvisors(new MessageChatMemoryAdvisor(chatMemory),
-                new MyLoggerAdvisor(),
-                new ReReadAdvisor(),
-                new SimpleLoggerAdvisor()
-            )
+            .defaultAdvisors(new MessageChatMemoryAdvisor(chatMemory), new MyLoggerAdvisor(), new ReReadAdvisor())
             .build();
     }
 
@@ -65,6 +72,28 @@ public class LoveApp {
             .entity(LoveReport.class);
         log.info("loveReport: {}", loveReport);
         return loveReport;
+    }
+
+    public String chatWithRag(String message, String chatId) {
+        ChatResponse response = chatClient.prompt()
+            .user(message)
+            .advisors(spec -> spec.param(CHAT_MEMORY_SESSION_ID_KEY, chatId).param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
+            .advisors(new QuestionAnswerAdvisor(loveAppVectorStore))
+            .call()
+            .chatResponse();
+
+        return response.getResult().getOutput().getText();
+    }
+
+    public String chatWithCloudRag(String message, String chatId) {
+        ChatResponse response = chatClient.prompt()
+            .user(message)
+            .advisors(spec -> spec.param(CHAT_MEMORY_SESSION_ID_KEY, chatId).param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
+            .advisors(loveAppRagCloudAdvisor)
+            .call()
+            .chatResponse();
+
+        return response.getResult().getOutput().getText();
     }
 
     /**
