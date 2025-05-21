@@ -11,6 +11,7 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.stereotype.Component;
 import org.zepe.aiagent.advisor.MyLoggerAdvisor;
 import org.zepe.aiagent.advisor.ReReadAdvisor;
+import org.zepe.aiagent.chatmemeory.FileBasedChatMemory;
 
 import java.util.List;
 
@@ -33,8 +34,9 @@ public class LoveApp {
     private final ChatClient chatClient;
 
     public LoveApp(ChatModel dashscopeChatModel) {
-        // 初始化基于内存的对话记忆
-        ChatMemory chatMemory = new InMemoryChatMemory();
+        // 初始化基于文件的对话记忆
+        String dir = System.getProperty("user.dir") + "/chat-memory";
+        ChatMemory chatMemory = new FileBasedChatMemory(dir);
         chatClient = ChatClient.builder(dashscopeChatModel)
             .defaultSystem(SYSTEM_PROMPT)
             .defaultAdvisors(new MessageChatMemoryAdvisor(chatMemory),
