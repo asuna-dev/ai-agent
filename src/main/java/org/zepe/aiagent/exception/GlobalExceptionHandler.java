@@ -1,6 +1,5 @@
 package org.zepe.aiagent.exception;
 
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -20,7 +19,6 @@ public class GlobalExceptionHandler {
         log.error("BusinessException", e);
         return Response.failed(e.getCode(), e.getMessage());
     }
-
 
     @ExceptionHandler(Exception.class)
     public Response<?> runtimeExceptionHandler(Exception e) {
