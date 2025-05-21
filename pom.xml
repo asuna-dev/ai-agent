@@ -17,16 +17,21 @@
         <java.version>21</java.version>
     </properties>
     <dependencies>
+        <!--        <dependency>-->
+        <!--            <groupId>com.alibaba.cloud.ai</groupId>-->
+        <!--            <artifactId>spring-ai-alibaba-starter</artifactId>-->
+        <!--            <version>1.0.0-M5.1</version>-->
+        <!--            <exclusions>-->
+        <!--                <exclusion>-->
+        <!--                    <groupId>commons-logging</groupId>-->
+        <!--                    <artifactId>commons-logging</artifactId>-->
+        <!--                </exclusion>-->
+        <!--            </exclusions>-->
+        <!--        </dependency>-->
         <dependency>
-            <groupId>com.alibaba.cloud.ai</groupId>
-            <artifactId>spring-ai-alibaba-starter</artifactId>
-            <version>1.0.0-M5.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
+            <version>1.0.0-M6</version>
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
